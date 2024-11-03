@@ -1,0 +1,15 @@
+#д©б╪
+.vs/
+Debug/
+QPakTool/Debug
+bin/
+
+#нд╪Ч
+QuakeLite.srctrlbm
+QuakeLite.srctrldb
+QuakeLite.srctrlprj
+QuakeLite.vcxproj.filters
+QuakeLite.vcxproj.user
+
+QPakTool/QPakTool.vcxproj.filters
+QPakTool/QPakTool.vcxproj.user
