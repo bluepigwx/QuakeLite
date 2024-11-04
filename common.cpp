@@ -204,7 +204,7 @@ Returns the position (1 to argc-1) in the program's argument list
 where the given parameter apears, or 0 if not present
 ================
 */
-int COM_CheckParm(char* parm)
+int COM_CheckParm(const char* parm)
 {
 	int		i;
 
@@ -242,7 +242,7 @@ void COM_ClearArgv(int arg)
 COM_InitArgv
 ================
 */
-void COM_InitArgv(int argc, char** argv)
+void COM_InitArgv(int argc, const char** argv)
 {
 	int		i;
 
@@ -290,16 +290,16 @@ void Com_Error_f(void)
 	Com_Error(ERR_FATAL, "%s", Cmd_Argv(1));
 }
 
-
-
 //==============================================================================
+static bool Exit = false;
 
-void Qcommon_Init(int argc, char** argv)
+void Qcommon_Init(int argc, const char** argv)
 {
+	// 初始化低阶系统///////////////////////////////////////////////////
 	z_chain.next = z_chain.prev = &z_chain;
 	// prepare enough of the subsystems to handle
 	// cvar and command buffer management
-	COM_InitArgv(argc, argv);
+	COM_InitArgv(argc, argv); 
 	
 	Cbuf_Init();
 	
@@ -312,7 +312,6 @@ void Qcommon_Init(int argc, char** argv)
 	// config files, but we want other parms to override
 	// the settings of the config files
 	Cbuf_AddEarlyCommands(false);
-	
 	Cbuf_Execute();
 	
 	FS_InitFilesystem();
@@ -332,21 +331,45 @@ void Qcommon_Init(int argc, char** argv)
 #ifdef DEDICATED_ONLY
 	dedicated = Cvar_Get("dedicated", "1", CVAR_NOSET);
 #else
-	dedicated = Cvar_Get("dedicated", "0", CVAR_NOSET);
+	if (COM_CheckParm("dedicated") != 0)
+	{
+		dedicated = Cvar_Get("dedicated", "1", CVAR_NOSET);
+	}
+	else
+	{
+		dedicated = Cvar_Get("dedicated", "0", CVAR_NOSET);
+	}
 #endif
+
+	// 初始化高阶系统 //////////////////////////////////
+	Sys_Init();
 }
 
 void Qcommon_Frame(int msec)
 {
+	const char* s = nullptr;
 
+	while (s = Sys_ConsoleInput())
+	{
+		Cbuf_AddText(va("%s\n", s));
+	}
+
+	Cbuf_Execute();
 }
 
 void Qcommon_Shutdown(void)
 {
-
 }
 
+bool Qcommon_Exit()
+{
+	return Exit;
+}
 
+void Qcommon_RequestExit()
+{
+	Exit = true;
+}
 //==============================================================================
 
 

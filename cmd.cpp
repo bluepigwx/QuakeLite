@@ -29,9 +29,7 @@ int		alias_count;		// for detecting runaway loops
 
 sizebuf_t	cmd_text;
 unsigned char		cmd_text_buf[8192];
-
 char		defer_text_buf[8192];
-
 
 /*
 ============

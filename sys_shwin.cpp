@@ -3,6 +3,12 @@
 #include <direct.h>
 #include <io.h>
 
+
+// 交互用的控制台终端
+static HANDLE hinput = nullptr;
+static HANDLE houtput = nullptr;
+
+
 /*
 ================
 Sys_Milliseconds
@@ -20,19 +26,19 @@ int Sys_Milliseconds(void)
 		initialized = true;
 	}
 	curtime = ::timeGetTime() - base;
-
 	return curtime;
 }
 
-void Sys_Mkdir(char* path)
+
+int Sys_Mkdir(char* path)
 {
-	_mkdir(path);
+	return _mkdir(path);
 }
 
 
 void Sys_Error(const char* error, ...)
 {
-
+	Qcommon_RequestExit();
 }
 
 
@@ -110,3 +116,97 @@ void Sys_FindClose(void)
 		_findclose(findhandle);
 	findhandle = 0;
 }
+
+void Sys_Init()
+{
+	if (dedicated && dedicated->value != 0)
+	{
+		if (!::AllocConsole())
+		{
+			Sys_Error("AllocConsole Failed!!!!");
+		}
+
+		hinput = GetStdHandle(STD_INPUT_HANDLE);
+		houtput = GetStdHandle(STD_OUTPUT_HANDLE);
+	}
+}
+
+
+/*
+================
+Sys_ConsoleInput
+================
+*/
+static char	console_text[256];
+static int	console_textlen;
+
+const char* Sys_ConsoleInput(void)
+{
+	INPUT_RECORD	recs[32];
+	int		ch;
+	DWORD numevents, numread, dummy;
+
+	if (!dedicated || !dedicated->value)
+		return NULL;
+
+
+	for (;; )
+	{
+		if (!::GetNumberOfConsoleInputEvents(hinput, &numevents))
+			Sys_Error("Error getting # of console events");
+
+		if (numevents <= 0)
+			break;
+
+		if (!::ReadConsoleInput(hinput, recs, 1, &numread))
+			Sys_Error("Error reading console input");
+
+		if (numread != 1)
+			Sys_Error("Couldn't read console input");
+
+		if (recs[0].EventType == KEY_EVENT)
+		{
+			if (!recs[0].Event.KeyEvent.bKeyDown)
+			{
+				ch = recs[0].Event.KeyEvent.uChar.AsciiChar;
+
+				switch (ch)
+				{
+				case '\r':
+					// 只有回车才返回完整的命令
+					::WriteFile(houtput, "\r\n", 2, &dummy, NULL);
+					if (console_textlen)
+					{
+						console_text[console_textlen] = 0;
+						console_textlen = 0;
+						return console_text;
+					}
+					break;
+
+				case '\b':
+					if (console_textlen)
+					{
+						console_textlen--;
+						::WriteFile(houtput, "\b \b", 3, &dummy, NULL);
+					}
+					break;
+
+				default:
+					if (ch >= ' ')
+					{
+						if (console_textlen < sizeof(console_text) - 2)
+						{
+							::WriteFile(houtput, &ch, 1, &dummy, NULL);
+							console_text[console_textlen] = ch;
+							console_textlen++;
+						}
+					}
+					break;
+				}
+			}
+		}
+	}
+
+	return NULL;
+}
+

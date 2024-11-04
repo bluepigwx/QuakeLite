@@ -504,5 +504,4 @@ void Cvar_Init(void)
 {
 	Cmd_AddCommand("set", Cvar_Set_f);
 	Cmd_AddCommand("cvarlist", Cvar_List_f);
-
 }

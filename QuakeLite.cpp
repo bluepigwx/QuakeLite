@@ -3,22 +3,68 @@
 
 #include <iostream>
 #include "qcommon.h"
+#include <windows.h>
 
-int main(int argc, char* argv[])
+
+#define	MAX_NUM_ARGVS	128
+int argc;
+const char* argv[MAX_NUM_ARGVS];
+
+/*
+==================
+ParseCommandLine
+
+==================
+*/
+static void ParseCommandLine(LPSTR lpCmdLine)
 {
+	argc = 1;
+	argv[0] = "exe";
+
+	while (*lpCmdLine && (argc < MAX_NUM_ARGVS))
+	{
+		while (*lpCmdLine && ((*lpCmdLine <= 32) || (*lpCmdLine > 126)))
+			lpCmdLine++;
+
+		if (*lpCmdLine)
+		{
+			argv[argc] = lpCmdLine;
+			argc++;
+
+			while (*lpCmdLine && ((*lpCmdLine > 32) && (*lpCmdLine <= 126)))
+				lpCmdLine++;
+
+			if (*lpCmdLine)
+			{
+				*lpCmdLine = 0;
+				lpCmdLine++;
+			}
+
+		}
+	}
+}
+
+
+//int main(int argc, char* argv[])
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
+{
+	ParseCommandLine(lpCmdLine);
+
     Qcommon_Init(argc, argv);
 
     int oldTime = Sys_Milliseconds();
-    std::cout << "Hello World!\n";
+    int deltaTime = 0;
+    int newTime = 0;
+    while (!Qcommon_Exit())
+    {
+        do
+        {
+            newTime = Sys_Milliseconds();
+            deltaTime = newTime - oldTime;
+        } while (deltaTime < 1);
+
+        Qcommon_Frame(deltaTime);
+    }
+
+    Qcommon_Shutdown();
 }
-
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
-
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file

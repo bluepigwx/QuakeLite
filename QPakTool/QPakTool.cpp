@@ -5,8 +5,7 @@
 #include "lib_pak.h"
 
 
-// 命令行参数
-#define MAX_ARG_NUM 128  // 最大命令行参数个数
+#define MAX_ARG_NUM 128  
 int COM_Argc = 0;
 char* COM_Argv[MAX_ARG_NUM];
 
@@ -20,7 +19,6 @@ struct PakCmd
 };
 
 
-// 打印pak文件目录结构
 void Cmd_Print()
 {
 	if (COM_Argc != 3)
@@ -41,7 +39,7 @@ void Cmd_Print()
 }
 
 
-// 打印使用方法
+
 void Cmd_Help()
 {
 	printf("QPakTool usage:\n");
@@ -51,7 +49,6 @@ void Cmd_Help()
 }
 
 
-// 解包pak文件到指定目录
 void Cmd_Extract()
 {
 	pakfile* pak = Pak_Load(COM_Argv[2]);
