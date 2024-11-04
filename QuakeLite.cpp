@@ -7,6 +7,8 @@
 int main(int argc, char* argv[])
 {
     Qcommon_Init(argc, argv);
+
+    int oldTime = Sys_Milliseconds();
     std::cout << "Hello World!\n";
 }
 

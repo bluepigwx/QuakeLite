@@ -11,23 +11,20 @@
 extern	cvar_t* dedicated;
 
 //============================================================================
-
 void Z_Free(void* ptr);
 void* Z_Malloc(int size);			// returns 0 filled memory
 void* Z_TagMalloc(int size, int tag);
 void Z_FreeTags(int tag);
-
 //============================================================================
 
 
 
 
 //============================================================================
-
 typedef struct sizebuf_s
 {
 	bool	allowoverflow;	// if false, do a Com_Error
-	bool	overflowed;		// set to true if the buffer size failed 是否允许下一次缓存写入的时候如果可用空间不够则把已写入空间的内容冲掉
+	bool	overflowed;		// set to true if the buffer size failed
 	unsigned char* data;
 	int		maxsize;
 	int		cursize;
@@ -40,15 +37,12 @@ void SZ_Clear(sizebuf_t* buf);
 void* SZ_GetSpace(sizebuf_t* buf, int length);
 void SZ_Write(sizebuf_t* buf, void* data, int length);
 void SZ_Print(sizebuf_t* buf, char* data);	// strcats onto the sizebuf
-
 //==============================================================================
 
 
 
 
 //============================================================================
-// 操作系统命令行维护接口
-
 int	COM_Argc(void);
 const char* COM_Argv(int arg);	// range and null checked
 void COM_ClearArgv(int arg);
@@ -62,11 +56,9 @@ void COM_InitArgv(int argc, char** argv);
 
 
 //==============================================================================
-
 void Qcommon_Init(int argc, char** argv);
 void Qcommon_Frame(int msec);
 void Qcommon_Shutdown(void);
-
 //==============================================================================
 
 
@@ -159,7 +151,6 @@ char* Cmd_CompleteCommand(char* partial);
 // returns NULL if nothing fits
 
 
-// 对于解析成token的字符串，可以通过这里的接口访问他的参数
 int Cmd_Argc(void);
 const char* Cmd_Argv(int arg);
 char* Cmd_Args(void);
@@ -262,7 +253,6 @@ extern	bool userinfo_modified;
 FILESYSTEM
 
 */
-
 void FS_InitFilesystem(void);
 void FS_SetGamedir(char* dir);
 char* FS_Gamedir(void);
@@ -274,7 +264,8 @@ void FS_FreeFile(void* buffer);
 //==========================================================================
 
 
-
+//==========================================================================
+// Misc
 char* CopyString(const char* in);
 void Com_Printf(const char* fmt, ...);
 int Com_ServerState(void);		// this should have just been a cvar...

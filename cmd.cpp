@@ -72,8 +72,6 @@ Cbuf_InsertText
 Adds command text immediately after the current command
 Adds a \n to the text
 FIXME: actually change the command buffer to do less copying
-
-将新的text内容放到cmd_text的buffer的最前面
 ============
 */
 void Cbuf_InsertText(char* text)

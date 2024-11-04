@@ -24,8 +24,10 @@ typedef struct zhead_s
 	int		size;
 } zhead_t;
 
-zhead_t		z_chain;
-int		z_count, z_bytes;	// È«¾Ö±äÁ¿ÓÃÓÚ¼ÇÂ¼Ê¹ÓÃZone allocation ·ÖÅäµÄ×Ö½ÚÊıÓë´ÎÊı
+zhead_t z_chain;
+
+// è®°å½•å…¨å±€çš„å†…å­˜åˆ†é…æƒ…å†µ
+int z_count, z_bytes;
 
 /*
 ========================
@@ -137,6 +139,7 @@ void SZ_Clear(sizebuf_t* buf)
 	buf->overflowed = false;
 }
 
+// ä»sizebufåˆ†é…å‡ºlengthæŒ‡å®šçš„å†…å­˜
 void* SZ_GetSpace(sizebuf_t* buf, int length)
 {
 	void* data;
@@ -296,25 +299,22 @@ void Qcommon_Init(int argc, char** argv)
 	z_chain.next = z_chain.prev = &z_chain;
 	// prepare enough of the subsystems to handle
 	// cvar and command buffer management
-
-	// ±£´æ²Ù×÷ÏµÍ³ÃüÁîĞĞ²ÎÊı
 	COM_InitArgv(argc, argv);
-	// ³õÊ¼»¯cmd buff
+	
 	Cbuf_Init();
-	// ÃüÁîÏµÍ³³õÊ¼»¯
+	
 	Cmd_Init();
-	// ±äÁ¿ÏµÍ³³õÊ¼»¯
+	
 	Cvar_Init();
 
 	// we need to add the early commands twice, because
 	// a basedir or cddir needs to be set before execing
 	// config files, but we want other parms to override
 	// the settings of the config files
-	// ÕâÀïÆäÊµÊÇ°ÑÏµÍ³ÃüÁîĞĞ²ÎÊı·Åµ½CbufÀï×¼±¸Ö´ĞĞÒ»´Î
 	Cbuf_AddEarlyCommands(false);
-	// Ö´ĞĞCbufÀïÃæµÄÃüÁî
+	
 	Cbuf_Execute();
-	// ³õÊ¼»¯ÎÄ¼şÏµÍ³
+	
 	FS_InitFilesystem();
 
 	Cbuf_AddText("exec default.cfg\n");
