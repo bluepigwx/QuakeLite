@@ -142,12 +142,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="cl_main.cpp" />
     <ClCompile Include="cmd.cpp" />
     <ClCompile Include="common.cpp" />
     <ClCompile Include="cvar.cpp" />
     <ClCompile Include="files.cpp" />
     <ClCompile Include="QuakeLite.cpp" />
     <ClCompile Include="q_shared.cpp" />
+    <ClCompile Include="sv_main.cpp" />
     <ClCompile Include="sys_shwin.cpp" />
   </ItemGroup>
   <ItemGroup>

@@ -278,4 +278,19 @@ void Com_DPrintf(const char* fmt, ...);
 // System
 void Sys_Init(void);
 const char* Sys_ConsoleInput(void);
+void Sys_ConsoleOutput(char* string);
+//==========================================================================
+
+
+
+
+//==========================================================================
+// CLIENT / SERVER SYSTEMS
+void CL_Init(void);
+void CL_Shutdown(void);
+void CL_Frame(int msec);
+
+void SV_Init(void);
+void SV_Shutdown(char* finalmsg, bool reconnect);
+void SV_Frame(int msec);
 //==========================================================================

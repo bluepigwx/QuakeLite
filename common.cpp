@@ -1,7 +1,15 @@
 #include "qcommon.h"
 
 
-cvar_t* dedicated;
+cvar_t* dedicated = nullptr;	// 是否是专属服务器的配置
+cvar_t* logfile_active = nullptr;	// 打印日志的配置 1 = buffer log, 2 = flush after each print
+
+
+FILE* logfile = nullptr;	// 日志文件句柄
+
+
+#define	MAXPRINTMSG	4096
+#define MAX_NUM_ARGVS	50
 
 
 /*
@@ -343,6 +351,14 @@ void Qcommon_Init(int argc, const char** argv)
 
 	// 初始化高阶系统 //////////////////////////////////
 	Sys_Init();
+
+	// 初始化网络模块
+
+	// 初始化服务端逻辑
+	SV_Init();
+
+	// 初始化客户端逻辑
+	CL_Init();
 }
 
 void Qcommon_Frame(int msec)
@@ -353,8 +369,14 @@ void Qcommon_Frame(int msec)
 	{
 		Cbuf_AddText(va("%s\n", s));
 	}
-
+	// 执行控制台指令
 	Cbuf_Execute();
+
+	// 客户端主循环
+	CL_Frame(msec);
+
+	// 服务端主循环
+	SV_Frame(msec);
 }
 
 void Qcommon_Shutdown(void)
@@ -398,7 +420,31 @@ to the apropriate place.
 */
 void Com_Printf(const char* fmt, ...)
 {
+	va_list		argptr;
+	char		msg[MAXPRINTMSG];
 
+	va_start(argptr, fmt);
+	vsprintf(msg, fmt, argptr);
+	va_end(argptr);
+
+	// also echo to debugging console
+	Sys_ConsoleOutput(msg);
+
+	// logfile
+	if (logfile_active && logfile_active->value)
+	{
+		char	name[MAX_QPATH];
+
+		if (!logfile)
+		{
+			Com_sprintf(name, sizeof(name), "%s/qconsole.log", FS_Gamedir());
+			logfile = fopen(name, "w");
+		}
+		if (logfile)
+			fprintf(logfile, "%s", msg);
+		if (logfile_active->value > 1)
+			fflush(logfile);		// force it to save every time
+	}
 }
 
 
