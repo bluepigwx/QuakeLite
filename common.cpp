@@ -399,7 +399,6 @@ void Qcommon_RequestExit()
 
 //============================================================================
 // misc
-
 char* CopyString(const char* in)
 {
 	char* out;

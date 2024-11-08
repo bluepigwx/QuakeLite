@@ -122,7 +122,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>Winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Winmm.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -147,6 +147,7 @@
     <ClCompile Include="common.cpp" />
     <ClCompile Include="cvar.cpp" />
     <ClCompile Include="files.cpp" />
+    <ClCompile Include="net_win.cpp" />
     <ClCompile Include="QuakeLite.cpp" />
     <ClCompile Include="q_shared.cpp" />
     <ClCompile Include="sv_main.cpp" />

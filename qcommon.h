@@ -193,56 +193,60 @@ interface from being ambiguous.
 
 extern	cvar_t* cvar_vars;
 
-cvar_t* Cvar_Get(const char* var_name, const char* value, int flags);
 // creates the variable if it doesn't exist, or returns the existing one
 // if it exists, the value will not be changed, but flags will be ORed in
 // that allows variables to be unarchived without needing bitflags
+cvar_t* Cvar_Get(const char* var_name, const char* value, int flags);
 
-cvar_t* Cvar_Set(const char* var_name, const char* value);
 // will create the variable if it doesn't exist
+cvar_t* Cvar_Set(const char* var_name, const char* value);
 
-cvar_t* Cvar_ForceSet(char* var_name, char* value);
 // will set the variable even if NOSET or LATCH
+cvar_t* Cvar_ForceSet(char* var_name, char* value);
 
 cvar_t* Cvar_FullSet(const char* var_name, const char* value, int flags);
 
-void Cvar_SetValue(char* var_name, float value);
 // expands value to a string and calls Cvar_Set
+void Cvar_SetValue(char* var_name, float value);
 
-float Cvar_VariableValue(char* var_name);
 // returns 0 if not defined or non numeric
+float Cvar_VariableValue(char* var_name);
 
-const char* Cvar_VariableString(const char* var_name);
 // returns an empty string if not defined
+const char* Cvar_VariableString(const char* var_name);
 
-char* Cvar_CompleteVariable(char* partial);
 // attempts to match a partial variable name for command line completion
 // returns NULL if nothing fits
+char* Cvar_CompleteVariable(char* partial);
 
-void Cvar_GetLatchedVars(void);
 // any CVAR_LATCHED variables that have been set will now take effect
+void Cvar_GetLatchedVars(void);
 
-bool Cvar_Command(void);
 // called by Cmd_ExecuteString when Cmd_Argv(0) doesn't match a known
 // command.  Returns true if the command was a variable reference that
 // was handled. (print or change)
+bool Cvar_Command(void);
 
-void Cvar_WriteVariables(char* path);
+
+
 // appends lines containing "set variable value" for all variables
 // with the archive flag set to true.
+void Cvar_WriteVariables(char* path);
+
 
 void Cvar_Init(void);
 
-char* Cvar_Userinfo(void);
 // returns an info string containing all the CVAR_USERINFO cvars
+char* Cvar_Userinfo(void);
 
-char* Cvar_Serverinfo(void);
+
 // returns an info string containing all the CVAR_SERVERINFO cvars
+char* Cvar_Serverinfo(void);
 
-extern	bool userinfo_modified;
+
 // this is set each time a CVAR_USERINFO variable is changed
 // so that the client knows to send it to the server
-
+extern	bool userinfo_modified;
 //==========================================================================
 
 
@@ -293,4 +297,12 @@ void CL_Frame(int msec);
 void SV_Init(void);
 void SV_Shutdown(char* finalmsg, bool reconnect);
 void SV_Frame(int msec);
+//==========================================================================
+
+
+
+//==========================================================================
+// Net
+void NET_Init();
+void NET_Shutdown(void);
 //==========================================================================
