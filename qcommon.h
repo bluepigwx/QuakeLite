@@ -304,8 +304,31 @@ void SV_Frame(int msec);
 
 //==========================================================================
 // Net
+// 
+// net.h -- quake's interface to the networking layer
 #define	PORT_ANY	-1
+
+#define	MAX_MSGLEN		1400		// max length of a message
+#define	PACKET_HEADER	10			// two ints and a short
+
+// 客户端一个socket，服务端一个socket
+typedef enum { NS_CLIENT, NS_SERVER } netsrc_t;
+
+typedef struct
+{
+// reliable staging and holding areas
+	sizebuf_t	message;		// writing buffer to send to server
+	byte		message_buf[MAX_MSGLEN - 16];		// leave space for header
+
+// message is copied to this buffer when it is first transfered
+	int			reliable_length;
+	byte		reliable_buf[MAX_MSGLEN - 16];	// unacked reliable message
+} netchan_t;
 
 void NET_Init();
 void NET_Shutdown(void);
+void NET_OpenIP(void);
+void NET_Config(bool multiplayer);
+
+void Netchan_Transmit(netchan_t* chan, int length, byte* data);
 //==========================================================================

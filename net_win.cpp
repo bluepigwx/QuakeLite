@@ -1,5 +1,4 @@
 ﻿#include <windows.h>
-//#include <WinSock2.h>
 #include <winsock.h>
 #include "qcommon.h"
 
@@ -7,6 +6,8 @@
 cvar_t* net_shownet;
 static cvar_t* noudp;
 
+
+SOCKET ip_sockets[2];
 
 /*
 ====================
@@ -197,4 +198,98 @@ SOCKET NET_IPSocket(char* net_interface, int port)
 	}
 
 	return newsocket;
+}
+
+
+
+/*
+====================
+NET_OpenIP
+====================
+*/
+void NET_OpenIP(void)
+{
+	cvar_t* ip;
+	int		port;
+	int		dedicated;
+
+	ip = Cvar_Get("ip", "localhost", CVAR_NOSET);
+
+	dedicated = Cvar_VariableValue("dedicated");
+
+	if (!ip_sockets[NS_SERVER])
+	{
+		port = Cvar_Get("ip_hostport", "0", CVAR_NOSET)->value;
+		if (!port)
+		{
+			port = Cvar_Get("hostport", "0", CVAR_NOSET)->value;
+			if (!port)
+			{
+				port = Cvar_Get("port", va("%i", PORT_SERVER), CVAR_NOSET)->value;
+			}
+		}
+		ip_sockets[NS_SERVER] = NET_IPSocket(ip->string, port);
+		if (!ip_sockets[NS_SERVER] && dedicated)
+			Com_Error(ERR_FATAL, "Couldn't allocate dedicated server IP port");
+	}
+
+
+	// dedicated servers don't need client ports
+	if (dedicated)
+		return;
+
+	if (!ip_sockets[NS_CLIENT])
+	{
+		port = Cvar_Get("ip_clientport", "0", CVAR_NOSET)->value;
+		if (!port)
+		{
+			port = Cvar_Get("clientport", va("%i", PORT_CLIENT), CVAR_NOSET)->value;
+			if (!port)
+				port = PORT_ANY;
+		}
+		ip_sockets[NS_CLIENT] = NET_IPSocket(ip->string, port);
+		if (!ip_sockets[NS_CLIENT])
+			ip_sockets[NS_CLIENT] = NET_IPSocket(ip->string, PORT_ANY);
+	}
+}
+
+
+/*
+====================
+NET_Config
+
+A single player game will only use the loopback code
+multiplayer为true的条件是游戏开始时看游戏玩家人数是否大于1，只有1说明是本地游戏，不需要建立网络连接
+====================
+*/
+void NET_Config(bool multiplayer)
+{
+	int	i;
+	static	bool old_config;
+
+	if (old_config == multiplayer)
+		return;
+
+	old_config = multiplayer;
+
+	if (!multiplayer)
+	{	// shut down any existing sockets
+		// 单人游戏关闭所有socket
+		for (i = 0; i < 2; i++)
+		{
+			if (ip_sockets[i])
+			{
+				closesocket(ip_sockets[i]);
+				ip_sockets[i] = 0;
+			}
+		}
+	}
+	else
+	{	// open sockets
+		// 多人游戏开启socket
+		if (!noudp->value)
+			NET_OpenIP();
+		if (!noipx->value)
+			NET_OpenIPX();
+	}
 }
