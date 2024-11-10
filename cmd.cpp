@@ -1,4 +1,4 @@
-#include "qcommon.h"
+﻿#include "qcommon.h"
 #include "q_shared.h"
 
 
@@ -380,7 +380,6 @@ void Cmd_Alias_f(void)
 
 	a->value = CopyString(cmd);
 }
-
 
 
 

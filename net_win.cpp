@@ -1,4 +1,4 @@
-#include <windows.h>
+﻿#include <windows.h>
 //#include <WinSock2.h>
 #include <winsock.h>
 #include "qcommon.h"
@@ -10,105 +10,10 @@ static cvar_t* noudp;
 
 /*
 ====================
-NET_Init
-====================
-*/
-void NET_Init(void)
-{
-	static WSADATA		winsockdata;
-
-	WORD	wVersionRequested;
-	int		r;
-
-	wVersionRequested = MAKEWORD(1, 1);
-
-	r = WSAStartup(MAKEWORD(1, 1), &winsockdata);
-	if (r)
-		Com_Error(ERR_FATAL, "Winsock initialization failed.");
-
-	Com_Printf("Winsock Initialized\n");
-
-	noudp = Cvar_Get("noudp", "0", CVAR_NOSET);
-
-	net_shownet = Cvar_Get("net_shownet", "0", 0);
-}
-
-
-/*
-====================
-NET_Shutdown
-====================
-*/
-void NET_Shutdown(void)
-{
-	WSACleanup();
-}
-
-
-/*
-====================
-NET_Socket
-====================
-*/
-int NET_IPSocket(char* net_interface, int port)
-{
-	int					newsocket;
-	struct sockaddr_in	address;
-	bool			_true = true;
-	int					i = 1;
-	int					err;
-
-	if ((newsocket = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1)
-	{
-		err = WSAGetLastError();
-		if (err != WSAEAFNOSUPPORT)
-			Com_Printf("WARNING: UDP_OpenSocket: socket: %s", NET_ErrorString());
-		return 0;
-	}
-
-	// make it non-blocking
-	if (ioctlsocket(newsocket, FIONBIO, &_true) == -1)
-	{
-		Com_Printf("WARNING: UDP_OpenSocket: ioctl FIONBIO: %s\n", NET_ErrorString());
-		return 0;
-	}
-
-	// make it broadcast capable
-	if (setsockopt(newsocket, SOL_SOCKET, SO_BROADCAST, (char*)&i, sizeof(i)) == -1)
-	{
-		Com_Printf("WARNING: UDP_OpenSocket: setsockopt SO_BROADCAST: %s\n", NET_ErrorString());
-		return 0;
-	}
-
-	if (!net_interface || !net_interface[0] || !stricmp(net_interface, "localhost"))
-		address.sin_addr.s_addr = INADDR_ANY;
-	else
-		NET_StringToSockaddr(net_interface, (struct sockaddr*)&address);
-
-	if (port == PORT_ANY)
-		address.sin_port = 0;
-	else
-		address.sin_port = htons((short)port);
-
-	address.sin_family = AF_INET;
-
-	if (bind(newsocket, (void*)&address, sizeof(address)) == -1)
-	{
-		Com_Printf("WARNING: UDP_OpenSocket: bind: %s\n", NET_ErrorString());
-		closesocket(newsocket);
-		return 0;
-	}
-
-	return newsocket;
-}
-
-
-/*
-====================
 NET_ErrorString
 ====================
 */
-const char* NET_ErrorString(void)
+static const char* NET_ErrorString(void)
 {
 	int		code;
 
@@ -161,4 +66,135 @@ const char* NET_ErrorString(void)
 	case WSANO_DATA: return "WSANO_DATA";
 	default: return "NO ERROR";
 	}
+}
+
+
+/*
+====================
+NET_Init
+====================
+*/
+void NET_Init(void)
+{
+	static WSADATA		winsockdata;
+
+	WORD	wVersionRequested;
+	int		r;
+
+	wVersionRequested = MAKEWORD(1, 1);
+
+	r = WSAStartup(MAKEWORD(1, 1), &winsockdata);
+	if (r)
+		Com_Error(ERR_FATAL, "Winsock initialization failed.");
+
+	Com_Printf("Winsock Initialized\n");
+
+	noudp = Cvar_Get("noudp", "0", CVAR_NOSET);
+	net_shownet = Cvar_Get("net_shownet", "0", 0);
+}
+
+
+/*
+====================
+NET_Shutdown
+====================
+*/
+void NET_Shutdown(void)
+{
+	WSACleanup();
+}
+
+
+bool NET_StringToSockaddr(char* s, struct sockaddr* sadr)
+{
+	struct hostent* h;
+	char* colon;
+	char	copy[128];
+
+	memset(sadr, 0, sizeof(*sadr));
+
+	((struct sockaddr_in*)sadr)->sin_family = AF_INET;
+	((struct sockaddr_in*)sadr)->sin_port = 0;
+
+	strcpy(copy, s);
+	// 先取得端口号
+	// strip off a trailing :port if present
+	for (colon = copy; *colon; colon++)
+		if (*colon == ':')
+		{
+			*colon = 0;
+			((struct sockaddr_in*)sadr)->sin_port = htons((short)atoi(colon + 1));
+		}
+
+	// 再取得ipv4地址
+	if (copy[0] >= '0' && copy[0] <= '9')
+	{
+		*(int*)&((struct sockaddr_in*)sadr)->sin_addr = inet_addr(copy);
+	}
+	else
+	{
+		if (!(h = gethostbyname(copy)))
+			return 0;
+		*(int*)&((struct sockaddr_in*)sadr)->sin_addr = *(int*)h->h_addr_list[0];
+	}
+
+	return true;
+}
+
+
+/*
+====================
+NET_Socket
+====================
+*/
+SOCKET NET_IPSocket(char* net_interface, int port)
+{
+	SOCKET newsocket;
+	struct sockaddr_in	address;
+	u_long _true = 1;
+	int i = 1;
+	int err;
+
+	if ((newsocket = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1)
+	{
+		err = WSAGetLastError();
+		if (err != WSAEAFNOSUPPORT)
+			Com_Printf("WARNING: UDP_OpenSocket: socket: %s", NET_ErrorString());
+		return 0;
+	}
+
+	// make it non-blocking
+	if (ioctlsocket(newsocket, FIONBIO, &_true) == -1)
+	{
+		Com_Printf("WARNING: UDP_OpenSocket: ioctl FIONBIO: %s\n", NET_ErrorString());
+		return 0;
+	}
+
+	// make it broadcast capable
+	if (setsockopt(newsocket, SOL_SOCKET, SO_BROADCAST, (char*)&i, sizeof(i)) == -1)
+	{
+		Com_Printf("WARNING: UDP_OpenSocket: setsockopt SO_BROADCAST: %s\n", NET_ErrorString());
+		return 0;
+	}
+
+	if (!net_interface || !net_interface[0] || !_stricmp(net_interface, "localhost"))
+		address.sin_addr.s_addr = INADDR_ANY;
+	else
+		NET_StringToSockaddr(net_interface, (struct sockaddr*)&address);
+
+	if (port == PORT_ANY)
+		address.sin_port = 0;
+	else
+		address.sin_port = htons((short)port);
+
+	address.sin_family = AF_INET;
+
+	if (bind(newsocket, (sockaddr*)&address, sizeof(address)) == -1)
+	{
+		Com_Printf("WARNING: UDP_OpenSocket: bind: %s\n", NET_ErrorString());
+		closesocket(newsocket);
+		return 0;
+	}
+
+	return newsocket;
 }

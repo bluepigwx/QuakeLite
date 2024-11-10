@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include <direct.h>
 #include <stdio.h>
@@ -7,7 +7,7 @@
 
 typedef unsigned char byte;
 
-// °üÎÄ¼şÍ·
+// åŒ…æ–‡ä»¶å¤´
 typedef struct pakheader_t
 {
 	char head[4];
@@ -15,7 +15,7 @@ typedef struct pakheader_t
 	int dir_length;
 } pakheader;
 
-// ÎÄ¼şÄ¿Â¼
+// æ–‡ä»¶ç›®å½•
 typedef struct dirsection_t
 {
 	char filename[56];
@@ -23,7 +23,7 @@ typedef struct dirsection_t
 	int file_length;
 } dirsection;
 
-// pakÎÄ¼ş¼ÇÂ¼½á¹¹
+// pakæ–‡ä»¶è®°å½•ç»“æ„
 typedef struct pakfile_t
 {
 	FILE* handle;
@@ -33,15 +33,15 @@ typedef struct pakfile_t
 } pakfile;
 
 
-// ¼ÓÔØpakÎÄ¼şÄ¿Â¼±í
+// åŠ è½½pakæ–‡ä»¶ç›®å½•è¡¨
 pakfile* Pak_Load(char* filename);
-// ¹Ø±ÕÒ»¸öpakÎÄ¼ş¾ä±ú²¢ÇÒÊÍ·ÅÄ¿Â¼±í
+// å…³é—­ä¸€ä¸ªpakæ–‡ä»¶å¥æŸ„å¹¶ä¸”é‡Šæ”¾ç›®å½•è¡¨
 void Pak_Close(pakfile* pak);
-// ½âÑ¹Ò»¸öÎÄ¼ş³öÀ´
+// è§£å‹ä¸€ä¸ªæ–‡ä»¶å‡ºæ¥
 int Pak_Extract_One_File(char* filename, pakfile* pk);
-// ½âÑ¹ËùÓĞÎÄ¼şµ½Ö¸¶¨Ä¿Â¼
+// è§£å‹æ‰€æœ‰æ–‡ä»¶åˆ°æŒ‡å®šç›®å½•
 int Pak_Extract_All_File(pakfile* pak, char* destdir);
-// 0 ·µ»ØÓĞĞ§¸ñÊ½£¬·ÇÁã·µ»Ø´íÎó
+// 0 è¿”å›æœ‰æ•ˆæ ¼å¼ï¼Œéé›¶è¿”å›é”™è¯¯
 int Pak_IsValid(pakfile* pak);
-// ´òÓ¡pakÎÄ¼şÄ¿Â¼Ê÷
+// æ‰“å°pakæ–‡ä»¶ç›®å½•æ ‘
 void Pak_PrintTree(pakfile* pak);

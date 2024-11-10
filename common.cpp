@@ -1,11 +1,16 @@
 #include "qcommon.h"
 
 
+/*
+* 如果是dedicate模式那么默认就是控制台程序，忽略alloc_console的值
+* 如果是客户端模式，根据alloc_console的值判断是否分配控制台
+*/
 cvar_t* dedicated = nullptr;	// 是否是专属服务器的配置
+cvar_t* alloc_console = nullptr;	// 是否分配控制台
+
 cvar_t* logfile_active = nullptr;	// 打印日志的配置 1 = buffer log, 2 = flush after each print
-
-
 FILE* logfile = nullptr;	// 日志文件句柄
+
 
 
 #define	MAXPRINTMSG	4096
@@ -339,20 +344,16 @@ void Qcommon_Init(int argc, const char** argv)
 #ifdef DEDICATED_ONLY
 	dedicated = Cvar_Get("dedicated", "1", CVAR_NOSET);
 #else
-	if (COM_CheckParm("dedicated") != 0)
-	{
-		dedicated = Cvar_Get("dedicated", "1", CVAR_NOSET);
-	}
-	else
-	{
-		dedicated = Cvar_Get("dedicated", "0", CVAR_NOSET);
-	}
+	dedicated = Cvar_Get("dedicated", "0", CVAR_NOSET);
 #endif
+	// 控制台分配控制
+	alloc_console = Cvar_Get("alloc_console", "0", CVAR_NOSET);
 
 	// 初始化高阶系统 //////////////////////////////////
 	Sys_Init();
 
 	// 初始化网络模块
+	NET_Init();
 
 	// 初始化服务端逻辑
 	SV_Init();

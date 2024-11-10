@@ -154,6 +154,7 @@
     <ClCompile Include="sys_shwin.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="client.h" />
     <ClInclude Include="qcommon.h" />
     <ClInclude Include="qfiles.h" />
     <ClInclude Include="q_shared.h" />

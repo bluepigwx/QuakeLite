@@ -1,4 +1,4 @@
-#include "qcommon.h"
+﻿#include "qcommon.h"
 
 // define this to dissalow any data but the demo pak file
 //#define	NO_ADDONS
@@ -745,14 +745,14 @@ void FS_InitFilesystem(void)
 	// cddir <path>
 	// Logically concatenates the cddir after the basedir for 
 	// allows the game to run from outside the data tree
-	//
+	// CD是什么东西，还有人记得吗？
 	fs_cddir = Cvar_Get("cddir", "", CVAR_NOSET);
 	if (fs_cddir->string[0])
 		FS_AddGameDirectory(va("%s/" BASEDIRNAME, fs_cddir->string));
 
 	// ,cx
 	// start up with baseq2 by default
-	//
+	// 基础目录就是./baseq2
 	FS_AddGameDirectory(va("%s/" BASEDIRNAME, fs_basedir->string));
 
 	// any set gamedirs will be freed up to here

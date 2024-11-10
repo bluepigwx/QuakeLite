@@ -8,7 +8,8 @@
 
 
 
-extern	cvar_t* dedicated;
+extern cvar_t* dedicated;
+extern cvar_t* alloc_console;
 
 //============================================================================
 void Z_Free(void* ptr);
@@ -303,6 +304,8 @@ void SV_Frame(int msec);
 
 //==========================================================================
 // Net
+#define	PORT_ANY	-1
+
 void NET_Init();
 void NET_Shutdown(void);
 //==========================================================================

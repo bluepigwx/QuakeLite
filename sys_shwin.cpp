@@ -1,4 +1,4 @@
-#include "qcommon.h"
+﻿#include "qcommon.h"
 #include <windows.h>
 #include <direct.h>
 #include <io.h>
@@ -119,7 +119,9 @@ void Sys_FindClose(void)
 
 void Sys_Init()
 {
-	if (dedicated && dedicated->value != 0)
+	// 在windows系统下如果是专用服务器或者明确指定要分配控制台都执行控制台分配
+	bool need_console = (dedicated && dedicated->value !=0) || (alloc_console && alloc_console->value != 0);
+	if (need_console)
 	{
 		if (!::AllocConsole())
 		{
@@ -146,9 +148,8 @@ const char* Sys_ConsoleInput(void)
 	int		ch;
 	DWORD numevents, numread, dummy;
 
-	if (!dedicated || !dedicated->value)
+	if (!alloc_console || !alloc_console->value)
 		return NULL;
-
 
 	for (;; )
 	{
@@ -224,7 +225,7 @@ void Sys_ConsoleOutput(char* string)
 	DWORD dummy;
 	char	text[256];
 
-	if (!dedicated || !dedicated->value)
+	if (!alloc_console || !alloc_console->value)
 		return;
 
 	if (console_textlen)

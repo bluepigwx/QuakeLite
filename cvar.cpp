@@ -1,4 +1,4 @@
-// cvar.c -- dynamic variable tracking
+﻿// cvar.c -- dynamic variable tracking
 
 #include "qcommon.h"
 
