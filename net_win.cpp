@@ -146,6 +146,7 @@ bool NET_StringToSockaddr(char* s, struct sockaddr* sadr)
 /*
 ====================
 NET_Socket
+// 创建一个套接字，同时指定绑定的端口，客户端服务端都可以为创建好的套接字指定端口
 ====================
 */
 SOCKET NET_IPSocket(char* net_interface, int port)
@@ -217,6 +218,7 @@ void NET_OpenIP(void)
 
 	dedicated = Cvar_VariableValue("dedicated");
 
+	// 创建服务端监听端口
 	if (!ip_sockets[NS_SERVER])
 	{
 		port = Cvar_Get("ip_hostport", "0", CVAR_NOSET)->value;
