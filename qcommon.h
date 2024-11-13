@@ -302,6 +302,7 @@ void SV_Frame(int msec);
 
 
 
+#pragma region Net
 //==========================================================================
 // Net
 // 
@@ -343,10 +344,25 @@ typedef struct
 	byte		reliable_buf[MAX_MSGLEN - 16];	// unacked reliable message
 } netchan_t;
 
+typedef enum { NA_LOOPBACK, NA_BROADCAST, NA_IP, NA_IPX, NA_BROADCAST_IPX } netadrtype_t;
+
+typedef struct
+{
+	netadrtype_t	type;
+
+	byte	ip[4];
+	byte	ipx[10];
+
+	unsigned short	port;
+} netadr_t;
+
 void NET_Init();
 void NET_Shutdown(void);
 void NET_OpenIP(void);
 void NET_Config(bool multiplayer);
-
+char* NET_AdrToString(netadr_t a);
+bool NET_StringToAdr(char* s, netadr_t* a);
 void Netchan_Transmit(netchan_t* chan, int length, byte* data);
 //==========================================================================
+
+#pragma endregion

@@ -6,7 +6,9 @@ client_state_t	cl;
 
 
 void CL_Init(void)
-{}
+{
+	CL_InitLocal();
+}
 
 
 void CL_Shutdown(void)
@@ -35,38 +37,8 @@ void CL_ClearState(void)
 }
 
 
-/*
-=====================
-CL_Disconnect
 
-Goes from a connected state to full screen console state
-Sends a disconnect message to the server
-This is also called on Com_Error, so it shouldn't cause any errors
-=====================
-*/
-void CL_Disconnect(void)
-{
-	char	final[32];
-
-	if (cls.state == ca_disconnected)
-		return;
-
-	cls.connect_time = 0;
-
-	// send a disconnect message to the server
-	final[0] = clc_stringcmd;
-	strcpy((char*)final + 1, "disconnect");
-	Netchan_Transmit(&cls.netchan, static_cast<int>(strlen(final)), (byte*)final);
-	Netchan_Transmit(&cls.netchan, static_cast<int>(strlen(final)), (byte*)final);
-	Netchan_Transmit(&cls.netchan, static_cast<int>(strlen(final)), (byte*)final);
-
-	CL_ClearState();
-
-
-	cls.state = ca_disconnected;
-}
-
-
+#pragma region commands
 
 //=====================================
 //客户端命令集
@@ -106,4 +78,155 @@ void CL_Connect_f(void)
 	cls.state = ca_connecting;
 	strncpy(cls.servername, server, sizeof(cls.servername) - 1);
 	cls.connect_time = -99999;	// CL_CheckForResend() will fire immediately
+}
+
+
+#pragma endregion
+
+
+
+
+#pragma region net work
+
+/*
+=====================
+CL_Disconnect
+
+Goes from a connected state to full screen console state
+Sends a disconnect message to the server
+This is also called on Com_Error, so it shouldn't cause any errors
+=====================
+*/
+void CL_Disconnect(void)
+{
+	char	final[32];
+
+	if (cls.state == ca_disconnected)
+		return;
+
+	cls.connect_time = 0;
+
+	// send a disconnect message to the server
+	final[0] = clc_stringcmd;
+	strcpy((char*)final + 1, "disconnect");
+	Netchan_Transmit(&cls.netchan, static_cast<int>(strlen(final)), (byte*)final);
+	Netchan_Transmit(&cls.netchan, static_cast<int>(strlen(final)), (byte*)final);
+	Netchan_Transmit(&cls.netchan, static_cast<int>(strlen(final)), (byte*)final);
+
+	CL_ClearState();
+
+	cls.state = ca_disconnected;
+}
+
+
+/*
+=======================
+CL_SendConnectPacket
+
+We have gotten a challenge from the server, so try and
+connect.
+======================
+*/
+void CL_SendConnectPacket(void)
+{
+	netadr_t	adr;
+	int		port;
+
+	if (!NET_StringToAdr(cls.servername, &adr))
+	{
+		Com_Printf("Bad server address\n");
+		cls.connect_time = 0;
+		return;
+	}
+	if (adr.port == 0)
+		adr.port = BigShort(PORT_SERVER);
+
+	port = Cvar_VariableValue("qport");
+	userinfo_modified = false;
+
+	Netchan_OutOfBandPrint(NS_CLIENT, adr, "connect %i %i %i \"%s\"\n",
+		PROTOCOL_VERSION, port, cls.challenge, Cvar_Userinfo());
+}
+
+
+/*
+=================
+CL_CheckForResend
+
+Resend a connect message if the last one has timed out
+=================
+*/
+void CL_CheckForResend(void)
+{
+	// if the local server is running and we aren't
+	// then connect
+	if (cls.state == ca_disconnected && Com_ServerState())
+	{
+		cls.state = ca_connecting;
+		strncpy(cls.servername, "localhost", sizeof(cls.servername) - 1);
+		// we don't need a challenge on the localhost
+		CL_SendConnectPacket();
+		return;
+		//		cls.connect_time = -99999;	// CL_CheckForResend() will fire immediately
+	}
+
+	/*
+	netadr_t	adr;
+
+	// resend if we haven't gotten a reply yet
+	if (cls.state != ca_connecting)
+		return;
+
+	if (cls.realtime - cls.connect_time < 3000)
+		return;
+
+	if (!NET_StringToAdr(cls.servername, &adr))
+	{
+		Com_Printf("Bad server address\n");
+		cls.state = ca_disconnected;
+		return;
+	}
+	if (adr.port == 0)
+		adr.port = BigShort(PORT_SERVER);
+
+	cls.connect_time = cls.realtime;	// for retransmit requests
+
+	Com_Printf("Connecting to %s...\n", cls.servername);
+
+	Netchan_OutOfBandPrint(NS_CLIENT, adr, "getchallenge\n");
+	*/
+}
+
+
+/*
+==================
+CL_SendCommand
+
+==================
+*/
+void CL_SendCommand(void)
+{
+	// resend a connection request if necessary
+	CL_CheckForResend();
+}
+
+#pragma endregion
+
+
+
+/*
+=================
+CL_InitLocal
+=================
+*/
+void CL_InitLocal(void)
+{
+	cls.state = ca_disconnected;
+	cls.realtime = Sys_Milliseconds();
+
+	//
+	// register our commands
+	//
+	Cmd_AddCommand("connect", CL_Connect_f);
+
 }

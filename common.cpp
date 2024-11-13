@@ -476,7 +476,6 @@ void Com_Error(int code, const char* fmt, ...)
 
 
 int server_state;
-
 /*
 ==================
 Com_ServerState

@@ -25,10 +25,12 @@ typedef struct
 	float		connect_time;		// for connection retransmits
 	connstate_t	state;
 
-	// connection information
+	// connection information 其实就是server的ip地址
 	char		servername[MAX_OSPATH];	// name of server from original connect
 
 	netchan_t	netchan;
+
+	int			realtime;			// always increasing, no clamping, etc
 } client_static_t;
 
 extern client_static_t	cls;

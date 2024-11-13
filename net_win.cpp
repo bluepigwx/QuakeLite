@@ -106,6 +106,35 @@ void NET_Shutdown(void)
 }
 
 
+void SockadrToNetadr(struct sockaddr* s, netadr_t* a)
+{
+	if (s->sa_family == AF_INET)
+	{
+		a->type = NA_IP;
+		*(int*)&a->ip = ((struct sockaddr_in*)s)->sin_addr.s_addr;
+		a->port = ((struct sockaddr_in*)s)->sin_port;
+	}
+}
+
+char* NET_AdrToString(netadr_t a)
+{
+	static	char	s[64];
+
+	Com_sprintf(s, sizeof(s), "%i.%i.%i.%i:%i", a.ip[0], a.ip[1], a.ip[2], a.ip[3], ntohs(a.port));
+
+	return s;
+}
+
+char* NET_BaseAdrToString(netadr_t a)
+{
+	static	char	s[64];
+
+	Com_sprintf(s, sizeof(s), "%i.%i.%i.%i", a.ip[0], a.ip[1], a.ip[2], a.ip[3]);
+
+	return s;
+}
+
+
 bool NET_StringToSockaddr(char* s, struct sockaddr* sadr)
 {
 	struct hostent* h;
@@ -138,6 +167,38 @@ bool NET_StringToSockaddr(char* s, struct sockaddr* sadr)
 			return 0;
 		*(int*)&((struct sockaddr_in*)sadr)->sin_addr = *(int*)h->h_addr_list[0];
 	}
+
+	return true;
+}
+
+
+
+/*
+=============
+NET_StringToAdr
+
+localhost
+idnewt
+idnewt:28000
+192.246.40.70
+192.246.40.70:28000
+=============
+*/
+bool NET_StringToAdr(char* s, netadr_t* a)
+{
+	struct sockaddr sadr;
+
+	if (!strcmp(s, "localhost"))
+	{
+		memset(a, 0, sizeof(*a));
+		a->type = NA_LOOPBACK;
+		return true;
+	}
+
+	if (!NET_StringToSockaddr(s, &sadr))
+		return false;
+
+	SockadrToNetadr(&sadr, a);
 
 	return true;
 }
