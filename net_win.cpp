@@ -216,18 +216,18 @@ void NET_OpenIP(void)
 
 	ip = Cvar_Get("ip", "localhost", CVAR_NOSET);
 
-	dedicated = Cvar_VariableValue("dedicated");
+	dedicated = static_cast<int>(Cvar_VariableValue("dedicated"));
 
-	// 创建服务端监听端口
+	// 服务端套接字
 	if (!ip_sockets[NS_SERVER])
 	{
-		port = Cvar_Get("ip_hostport", "0", CVAR_NOSET)->value;
+		port = static_cast<int>(Cvar_Get("ip_hostport", "0", CVAR_NOSET)->value);
 		if (!port)
 		{
-			port = Cvar_Get("hostport", "0", CVAR_NOSET)->value;
+			port = static_cast<int>(Cvar_Get("hostport", "0", CVAR_NOSET)->value);
 			if (!port)
 			{
-				port = Cvar_Get("port", va("%i", PORT_SERVER), CVAR_NOSET)->value;
+				port = static_cast<int>(Cvar_Get("port", va("%i", PORT_SERVER), CVAR_NOSET)->value);
 			}
 		}
 		ip_sockets[NS_SERVER] = NET_IPSocket(ip->string, port);
@@ -240,12 +240,13 @@ void NET_OpenIP(void)
 	if (dedicated)
 		return;
 
+	// 客户端套接字
 	if (!ip_sockets[NS_CLIENT])
 	{
-		port = Cvar_Get("ip_clientport", "0", CVAR_NOSET)->value;
+		port = static_cast<int>(Cvar_Get("ip_clientport", "0", CVAR_NOSET)->value);
 		if (!port)
 		{
-			port = Cvar_Get("clientport", va("%i", PORT_CLIENT), CVAR_NOSET)->value;
+			port = static_cast<int>(Cvar_Get("clientport", va("%i", PORT_CLIENT), CVAR_NOSET)->value);
 			if (!port)
 				port = PORT_ANY;
 		}
@@ -288,10 +289,8 @@ void NET_Config(bool multiplayer)
 	}
 	else
 	{	// open sockets
-		// 多人游戏开启socket
+		// 如果是多人游戏则配置好socket
 		if (!noudp->value)
 			NET_OpenIP();
-		if (!noipx->value)
-			NET_OpenIPX();
 	}
 }

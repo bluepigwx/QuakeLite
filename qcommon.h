@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include "q_shared.h"
 #include "qfiles.h"
@@ -211,7 +211,7 @@ cvar_t* Cvar_FullSet(const char* var_name, const char* value, int flags);
 void Cvar_SetValue(char* var_name, float value);
 
 // returns 0 if not defined or non numeric
-float Cvar_VariableValue(char* var_name);
+float Cvar_VariableValue(const char* var_name);
 
 // returns an empty string if not defined
 const char* Cvar_VariableString(const char* var_name);
@@ -311,7 +311,25 @@ void SV_Frame(int msec);
 #define	MAX_MSGLEN		1400		// max length of a message
 #define	PACKET_HEADER	10			// two ints and a short
 
-// ¿Í»§¶ËÒ»¸ösocket£¬·þÎñ¶ËÒ»¸ösocket
+#define	PORT_MASTER	27900
+#define	PORT_CLIENT	27901
+#define	PORT_SERVER	27910
+
+//==============================================
+
+//
+// client to server
+//
+enum clc_ops_e
+{
+	clc_bad,
+	clc_nop,
+	clc_move,				// [[usercmd_t]
+	clc_userinfo,			// [[userinfo string]
+	clc_stringcmd			// [string] message
+};
+
+
 typedef enum { NS_CLIENT, NS_SERVER } netsrc_t;
 
 typedef struct

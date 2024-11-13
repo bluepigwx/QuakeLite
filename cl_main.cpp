@@ -2,6 +2,7 @@
 #include "client.h"
 
 client_static_t	cls;
+client_state_t	cl;
 
 
 void CL_Init(void)
@@ -19,6 +20,23 @@ void CL_Frame(int msec)
 
 /*
 =====================
+CL_ClearState
+
+=====================
+*/
+void CL_ClearState(void)
+{
+	// wipe the entire cl structure
+	memset(&cl, 0, sizeof(cl));
+	//memset(&cl_entities, 0, sizeof(cl_entities));
+
+	SZ_Clear(&cls.netchan.message);
+
+}
+
+
+/*
+=====================
 CL_Disconnect
 
 Goes from a connected state to full screen console state
@@ -28,7 +46,7 @@ This is also called on Com_Error, so it shouldn't cause any errors
 */
 void CL_Disconnect(void)
 {
-	byte	final[32];
+	char	final[32];
 
 	if (cls.state == ca_disconnected)
 		return;
@@ -38,9 +56,9 @@ void CL_Disconnect(void)
 	// send a disconnect message to the server
 	final[0] = clc_stringcmd;
 	strcpy((char*)final + 1, "disconnect");
-	Netchan_Transmit(&cls.netchan, strlen(final), final);
-	Netchan_Transmit(&cls.netchan, strlen(final), final);
-	Netchan_Transmit(&cls.netchan, strlen(final), final);
+	Netchan_Transmit(&cls.netchan, static_cast<int>(strlen(final)), (byte*)final);
+	Netchan_Transmit(&cls.netchan, static_cast<int>(strlen(final)), (byte*)final);
+	Netchan_Transmit(&cls.netchan, static_cast<int>(strlen(final)), (byte*)final);
 
 	CL_ClearState();
 
@@ -62,7 +80,7 @@ CL_Connect_f
 */
 void CL_Connect_f(void)
 {
-	char* server;
+	const char* server;
 
 	if (Cmd_Argc() != 2)
 	{
@@ -72,7 +90,7 @@ void CL_Connect_f(void)
 
 	if (Com_ServerState())
 	{	// if running a local server, kill it and reissue
-		SV_Shutdown(va("Server quit\n", msg), false);
+		//SV_Shutdown(va("Server quit\n", msg), false);
 	}
 	else
 	{

@@ -1,6 +1,6 @@
-#pragma once
+ï»¿#pragma once
 
-
+#include "qcommon.h"
 
 /*
 ==================================================================
@@ -22,8 +22,26 @@ typedef enum {
 
 typedef struct
 {
-	connstate_t	state;	// ¿Í»§¶ËÁ¬½Ó×´Ì¬
+	float		connect_time;		// for connection retransmits
+	connstate_t	state;
+
+	// connection information
+	char		servername[MAX_OSPATH];	// name of server from original connect
+
+	netchan_t	netchan;
 } client_static_t;
 
-
 extern client_static_t	cls;
+
+//
+// the client_state_t structure is wiped completely at every
+// server map change
+//
+typedef struct
+{
+	int			timeoutcount;
+} client_state_t;
+
+extern	client_state_t	cl;
+
+
