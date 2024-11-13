@@ -1,4 +1,4 @@
-#include "lib_pak.h"
+ï»¿#include "lib_pak.h"
 
 
 
@@ -60,9 +60,9 @@ pakfile* Pak_Load(char* filename)
 	pakfile* pak = (pakfile*)malloc(sizeof(pakfile));
 	pak->handle = fp;
 
-	// ¶ÁÈ¡ÎÄ¼þÍ·ÐÅÏ¢
+	// è¯»å–æ–‡ä»¶å¤´ä¿¡æ¯
 	fread(&pak->header, sizeof(pakheader), 1, pak->handle);
-	// Ñ°Ö·µ½Ä¿Â¼ÐÅÏ¢²¢¶ÁÈ¡µ½infoÁÙÊ±buff
+	// å¯»å€åˆ°ç›®å½•ä¿¡æ¯å¹¶è¯»å–åˆ°infoä¸´æ—¶buff
 	fseek(fp, pak->header.dir_offset, SEEK_SET);
 	fread(info, pak->header.dir_length, 1, fp);
 
