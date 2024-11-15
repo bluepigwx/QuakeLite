@@ -7,9 +7,9 @@
 #define	BASEDIRNAME	"baseq2"
 
 
-
 extern cvar_t* dedicated;
 extern cvar_t* alloc_console;
+
 
 //============================================================================
 void Z_Free(void* ptr);
@@ -17,7 +17,6 @@ void* Z_Malloc(int size);			// returns 0 filled memory
 void* Z_TagMalloc(int size, int tag);
 void Z_FreeTags(int tag);
 //============================================================================
-
 
 
 
@@ -31,7 +30,6 @@ typedef struct sizebuf_s
 	int		cursize;
 	int		readcount;
 } sizebuf_t;
-
 
 void SZ_Init(sizebuf_t* buf, unsigned char* data, int length);
 void SZ_Clear(sizebuf_t* buf);
@@ -48,7 +46,6 @@ int	COM_Argc(void);
 const char* COM_Argv(int arg);	// range and null checked
 void COM_ClearArgv(int arg);
 int COM_CheckParm(const char* parm);
-void COM_AddParm(char* parm);
 void COM_InitArgv(int argc, const char** argv);
 //============================================================================
 
@@ -227,7 +224,6 @@ void Cvar_GetLatchedVars(void);
 // command.  Returns true if the command was a variable reference that
 // was handled. (print or change)
 bool Cvar_Command(void);
-
 
 
 // appends lines containing "set variable value" for all variables
