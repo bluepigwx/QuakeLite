@@ -6,6 +6,9 @@ client_state_t	cl;
 
 
 void CL_InitLocal(void);
+void CL_SendCommand(void);
+
+
 
 void CL_Init(void)
 {
@@ -18,7 +21,13 @@ void CL_Shutdown(void)
 
 
 void CL_Frame(int msec)
-{}
+{
+	// fetch results from server
+	//CL_ReadPackets();
+
+	// send a new command message to the server
+	CL_SendCommand();
+}
 
 
 
