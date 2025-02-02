@@ -5,9 +5,12 @@
 * 如果是dedicate模式那么默认就是控制台程序，忽略alloc_console的值
 * 如果是客户端模式，根据alloc_console的值判断是否分配控制台
 */
-cvar_t* dedicated = nullptr;	// 是否是专属服务器的配置
+cvar_t* dedicated = nullptr;		// 是否是专属服务器的配置
 cvar_t* alloc_console = nullptr;	// 是否分配控制台
+cvar_t* developer = nullptr;		// debug开关
 
+
+// 日志相关
 cvar_t* logfile_active = nullptr;	// 打印日志的配置 1 = buffer log, 2 = flush after each print
 FILE* logfile = nullptr;	// 日志文件句柄
 
@@ -17,6 +20,7 @@ cvar_t* frame_delta = nullptr;	// 每帧固定间隔
 #define MAX_NUM_ARGVS	50
 
 
+#pragma region Zone Memory
 /*
 ==============================================================================
 
@@ -132,11 +136,12 @@ void* Z_Malloc(int size)
 }
 
 //===========================================================================
+#pragma endregion
 
 
 
 
-
+#pragma region size buffer
 //===========================================================================
 
 void SZ_Init(sizebuf_t* buf, unsigned char* data, int length)
@@ -200,8 +205,11 @@ void SZ_Print(sizebuf_t* buf, char* data)
 
 //============================================================================
 
+#pragma endregion
 
 
+
+#pragma region command line
 //============================================================================
 
 #define MAX_NUM_ARGVS	50
@@ -272,23 +280,15 @@ void COM_InitArgv(int argc, const char** argv)
 	}
 }
 
-/*
-================
-COM_AddParm
-
-Adds the given string at the end of the current argument list
-================
-*/
-void COM_AddParm(char* parm)
-{
-	if (com_argc == MAX_NUM_ARGVS)
-		Com_Error(ERR_FATAL, "COM_AddParm: MAX_NUM)ARGS");
-	com_argv[com_argc++] = parm;
-}
 
 //============================================================================
+#pragma endregion
 
 
+
+
+#pragma region commands
+//============================================================================
 
 /*
 =============
@@ -303,8 +303,14 @@ void Com_Error_f(void)
 	Com_Error(ERR_FATAL, "%s", Cmd_Argv(1));
 }
 
+#pragma endregion
 //==============================================================================
-static bool Exit = false;
+
+
+
+
+#pragma region Common
+//==============================================================================
 
 void Qcommon_Init(int argc, const char** argv)
 {
@@ -409,34 +415,33 @@ void Qcommon_Frame(int msec)
 	SV_Frame(msec);
 }
 
+
 void Qcommon_Shutdown(void)
-{
+{	
+	// 关闭日志文件
+	if (logfile)
+	{
+		fclose(logfile);
+	}
 }
 
+
+static bool Exit = false;
 bool Qcommon_Exit()
 {
 	return Exit;
 }
 
+
 void Qcommon_RequestExit()
 {
 	Exit = true;
 }
+
 //==============================================================================
+#pragma endregion
 
 
-
-
-//============================================================================
-// misc
-char* CopyString(const char* in)
-{
-	char* out;
-
-	out = (char*)Z_Malloc(static_cast<int>(strlen(in)) + 1);
-	strcpy(out, in);
-	return out;
-}
 
 
 /*
@@ -484,9 +489,19 @@ Com_DPrintf
 A Com_Printf that only shows up if the "developer" cvar is set
 ================
 */
-void Com_DPrintf(const char* fmt, ...)
+void Com_DPrintf(char* fmt, ...)
 {
+	va_list		argptr;
+	char		msg[MAXPRINTMSG];
 
+	if (!developer || !developer->value)
+		return;			// don't confuse non-developers with techie stuff...
+
+	va_start(argptr, fmt);
+	vsprintf(msg, fmt, argptr);
+	va_end(argptr);
+
+	Com_Printf("%s", msg);
 }
 
 
@@ -521,3 +536,15 @@ void Cmd_ForwardToServer()
 }
 
 //============================================================================
+
+
+//============================================================================
+// misc
+char* CopyString(const char* in)
+{
+	char* out;
+
+	out = (char*)Z_Malloc(static_cast<int>(strlen(in)) + 1);
+	strcpy(out, in);
+	return out;
+}
