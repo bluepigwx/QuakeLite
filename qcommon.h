@@ -1,14 +1,13 @@
 ﻿#pragma once
 
 #include "q_shared.h"
-#include "qfiles.h"
 
 
 #define	BASEDIRNAME	"baseq2"
 
 
-extern cvar_t* dedicated;
-extern cvar_t* alloc_console;
+extern cvar_t* dedicated;		// 是否是专属服务器
+extern cvar_t* alloc_console;	// 是否分配专属控制台
 
 
 //============================================================================
@@ -231,16 +230,13 @@ bool Cvar_Command(void);
 // with the archive flag set to true.
 void Cvar_WriteVariables(char* path);
 
-
 void Cvar_Init(void);
 
 // returns an info string containing all the CVAR_USERINFO cvars
 char* Cvar_Userinfo(void);
 
-
 // returns an info string containing all the CVAR_SERVERINFO cvars
 char* Cvar_Serverinfo(void);
-
 
 // this is set each time a CVAR_USERINFO variable is changed
 // so that the client knows to send it to the server
@@ -249,6 +245,7 @@ extern	bool userinfo_modified;
 
 
 
+#include "qfiles.h"
 
 //==========================================================================
 /*
@@ -299,7 +296,6 @@ void SV_Frame(int msec);
 
 
 
-#pragma region Net
 //==========================================================================
 // Net
 // 
@@ -361,5 +357,3 @@ char* NET_AdrToString(netadr_t a);
 bool NET_StringToAdr(char* s, netadr_t* a);
 void Netchan_Transmit(netchan_t* chan, int length, byte* data);
 //==========================================================================
-
-#pragma endregion

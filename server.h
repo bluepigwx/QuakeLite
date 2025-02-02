@@ -101,4 +101,4 @@ extern	cvar_t* maxclients;	// 当前的最大客户端连接数
 
 
 // 注册服务器运维命令，例如踢人，更换地图等等能力
-void SV_InitOperatorCommands(void);
+//void SV_InitOperatorCommands(void);
