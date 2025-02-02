@@ -489,7 +489,7 @@ Com_DPrintf
 A Com_Printf that only shows up if the "developer" cvar is set
 ================
 */
-void Com_DPrintf(char* fmt, ...)
+void Com_DPrintf(const char* fmt, ...)
 {
 	va_list		argptr;
 	char		msg[MAXPRINTMSG];

@@ -1,5 +1,4 @@
 ﻿#include "qcommon.h"
-#include "q_shared.h"
 
 
 #define	MAX_ALIAS_NAME	32

@@ -156,7 +156,7 @@ const char* Sys_ConsoleInput(void)
 		if (!::GetNumberOfConsoleInputEvents(hinput, &numevents))
 		{
 			long LastError = GetLastError();
-			//Sys_Error("Error getting of console events %d", LastError);
+			Sys_Error("Error getting of console events %d", LastError);
 			return nullptr;
 		}
 

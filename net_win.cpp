@@ -1,6 +1,7 @@
-﻿#include <windows.h>
+﻿#include "qcommon.h"
+
+#include <windows.h>
 #include <winsock.h>
-#include "qcommon.h"
 
 
 cvar_t* net_shownet;

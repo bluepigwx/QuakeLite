@@ -151,11 +151,14 @@
     <ClCompile Include="net_win.cpp" />
     <ClCompile Include="QuakeLite.cpp" />
     <ClCompile Include="q_shared.cpp" />
+    <ClCompile Include="sv_ccmds.c" />
+    <ClCompile Include="sv_init.c" />
     <ClCompile Include="sv_main.cpp" />
     <ClCompile Include="sys_shwin.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="client.h" />
+    <ClInclude Include="game.h" />
     <ClInclude Include="qcommon.h" />
     <ClInclude Include="qfiles.h" />
     <ClInclude Include="q_shared.h" />
