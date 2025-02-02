@@ -159,6 +159,7 @@
     <ClInclude Include="qcommon.h" />
     <ClInclude Include="qfiles.h" />
     <ClInclude Include="q_shared.h" />
+    <ClInclude Include="server.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

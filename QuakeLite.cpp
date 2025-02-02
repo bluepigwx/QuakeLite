@@ -52,19 +52,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
     Qcommon_Init(argc, argv);
 
-    int oldTime = Sys_Milliseconds();
-    int deltaTime = 0;
-    int newTime = 0;
-    while (!Qcommon_Exit())
-    {
-        do
-        {
-            newTime = Sys_Milliseconds();
-            deltaTime = newTime - oldTime;
-        } while (deltaTime < 1);
-
-        Qcommon_Frame(deltaTime);
-    }
+	Qcommon_Loop();
 
     Qcommon_Shutdown();
 }

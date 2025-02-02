@@ -11,7 +11,7 @@ cvar_t* alloc_console = nullptr;	// 是否分配控制台
 cvar_t* logfile_active = nullptr;	// 打印日志的配置 1 = buffer log, 2 = flush after each print
 FILE* logfile = nullptr;	// 日志文件句柄
 
-
+cvar_t* frame_delta = nullptr;	// 每帧固定间隔
 
 #define	MAXPRINTMSG	4096
 #define MAX_NUM_ARGVS	50
@@ -351,6 +351,8 @@ void Qcommon_Init(int argc, const char** argv)
 	// 控制台分配控制
 	alloc_console = Cvar_Get("alloc_console", "0", CVAR_NOSET);
 
+	// 设置每帧固定间隔
+	frame_delta = Cvar_Get("frame_delta", "16.6", CVAR_NOSET);
 	// 初始化高阶系统 //////////////////////////////////
 	Sys_Init();
 
@@ -362,6 +364,31 @@ void Qcommon_Init(int argc, const char** argv)
 
 	// 初始化客户端逻辑
 	CL_Init();
+}
+
+void Qcommon_Loop(void)
+{
+	int oldTime = Sys_Milliseconds();
+	int deltaTime = static_cast<int>(frame_delta->value);
+	int accumulator = 0;
+	while (!Qcommon_Exit())
+	{
+		if (frame_delta->modified)
+		{
+			deltaTime = static_cast<int>(frame_delta->value);
+			frame_delta->modified = false;
+		}
+		
+		int newTime = Sys_Milliseconds();
+		int elapsed = newTime - oldTime;
+		
+		accumulator += elapsed;
+		while (accumulator >= deltaTime)
+		{
+			Qcommon_Frame(deltaTime);
+			accumulator -= deltaTime;
+		}
+	}
 }
 
 void Qcommon_Frame(int msec)

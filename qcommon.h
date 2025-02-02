@@ -59,6 +59,7 @@ void COM_InitArgv(int argc, const char** argv);
 void Qcommon_Init(int argc, const char** argv);
 void Qcommon_Frame(int msec);
 void Qcommon_Shutdown(void);
+void Qcommon_Loop(void);
 void Qcommon_Frame(int msec);
 void Qcommon_RequestExit();
 bool Qcommon_Exit();

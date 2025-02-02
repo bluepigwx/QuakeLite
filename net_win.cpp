@@ -279,7 +279,7 @@ void NET_OpenIP(void)
 
 	dedicated = static_cast<int>(Cvar_VariableValue("dedicated"));
 
-	// 服务端套接字
+	// 服务端套接字，选择一个可以用于监听的端口，然后创建对应的套接字
 	if (!ip_sockets[NS_SERVER])
 	{
 		port = static_cast<int>(Cvar_Get("ip_hostport", "0", CVAR_NOSET)->value);
@@ -295,8 +295,7 @@ void NET_OpenIP(void)
 		if (!ip_sockets[NS_SERVER] && dedicated)
 			Com_Error(ERR_FATAL, "Couldn't allocate dedicated server IP port");
 	}
-
-
+	
 	// dedicated servers don't need client ports
 	if (dedicated)
 		return;
@@ -321,7 +320,7 @@ void NET_OpenIP(void)
 /*
 ====================
 NET_Config
-
+开始配置网络以进行联网游戏
 A single player game will only use the loopback code
 multiplayer为true的条件是游戏开始时看游戏玩家人数是否大于1，只有1说明是本地游戏，不需要建立网络连接
 ====================
@@ -329,7 +328,7 @@ multiplayer为true的条件是游戏开始时看游戏玩家人数是否大于1�
 void NET_Config(bool multiplayer)
 {
 	int	i;
-	static	bool old_config;
+	static	bool old_config = false;
 
 	if (old_config == multiplayer)
 		return;

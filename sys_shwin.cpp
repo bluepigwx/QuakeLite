@@ -151,16 +151,23 @@ const char* Sys_ConsoleInput(void)
 	if (!alloc_console || !alloc_console->value)
 		return NULL;
 
-	for (;; )
+	for (;;)
 	{
 		if (!::GetNumberOfConsoleInputEvents(hinput, &numevents))
-			Sys_Error("Error getting # of console events");
+		{
+			long LastError = GetLastError();
+			//Sys_Error("Error getting of console events %d", LastError);
+			return nullptr;
+		}
 
 		if (numevents <= 0)
 			break;
 
 		if (!::ReadConsoleInput(hinput, recs, 1, &numread))
+		{
 			Sys_Error("Error reading console input");
+			return nullptr;
+		}
 
 		if (numread != 1)
 			Sys_Error("Couldn't read console input");
