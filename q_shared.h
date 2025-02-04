@@ -53,7 +53,7 @@ typedef	int	fixed16_t;
 //=============================================
 // 
 // portable case insensitive compare
-int Q_stricmp(char* s1, char* s2);
+int Q_stricmp(char* s1, const char* s2);
 int Q_strcasecmp(const char* s1, const char* s2);
 int Q_strncasecmp(const char* s1, const char* s2, int n);
 
@@ -234,6 +234,7 @@ typedef struct cmodel_s
 // 网络通讯定义///////////////////////////////////////////////////////////////////////
 // in an update message about entities that the client will
 // need to render in some way
+// 用于将一个entity的各种状态打包在网络上进行通讯
 typedef struct entity_state_s
 {
 	int		number;			// edict index	// 服务器实体数组中对应的实体下标

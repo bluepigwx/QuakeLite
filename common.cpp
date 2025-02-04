@@ -332,6 +332,8 @@ void Qcommon_Init(int argc, const char** argv)
 	// a basedir or cddir needs to be set before execing
 	// config files, but we want other parms to override
 	// the settings of the config files
+	// 这里其实就是将命令行里+set xx xx一类命令执行一次，但不要从命令行缓冲区内移除，
+	// 因为想在执行玩default.cfg和config.cfg之后再将同名的+set xx xx命令覆盖掉来保证命令行内的设置优先级最高
 	Cbuf_AddEarlyCommands(false);
 	Cbuf_Execute();
 	

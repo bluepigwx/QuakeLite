@@ -24,8 +24,6 @@ another level:
 	map tram.cin+jail_e3
 ======================
 */
-
-/*
 void SV_Map(bool attractloop, char* levelstring, bool loadgame)
 {
 	char	level[MAX_QPATH];
@@ -69,7 +67,7 @@ void SV_Map(bool attractloop, char* levelstring, bool loadgame)
 	if (level[0] == '*')
 		strcpy(level, level + 1);
 
-	l = strlen(level);
+	l = (int)strlen(level);
 	if (l > 4 && !strcmp(level + l - 4, ".cin"))
 	{
 		//SCR_BeginLoadingPlaque();			// for local system
@@ -99,7 +97,6 @@ void SV_Map(bool attractloop, char* levelstring, bool loadgame)
 
 	//SV_BroadcastCommand("reconnect\n");
 }
-*/
 
 
 /*
@@ -107,10 +104,9 @@ void SV_Map(bool attractloop, char* levelstring, bool loadgame)
 SV_InitGame
 
 A brand new game has been started
+这里指新开一局
 ==============
 */
-
-/*
 void SV_InitGame(void)
 {
 	int		i;
@@ -125,8 +121,8 @@ void SV_InitGame(void)
 	else
 	{
 		// make sure the client is down
-		CL_Drop();
-		SCR_BeginLoadingPlaque();
+		//CL_Drop();
+		//SCR_BeginLoadingPlaque();
 	}
 
 	// get any latched variable changes (maxclients, etc)
@@ -175,9 +171,9 @@ void SV_InitGame(void)
 	}
 
 	svs.spawncount = rand();
-	svs.clients = Z_Malloc(sizeof(client_t) * maxclients->value);
-	svs.num_client_entities = maxclients->value * UPDATE_BACKUP * 64;
-	svs.client_entities = Z_Malloc(sizeof(entity_state_t) * svs.num_client_entities);
+	svs.clients = (client_t*)Z_Malloc(sizeof(client_t) * (int)maxclients->value);
+	svs.num_client_entities = (int)maxclients->value * UPDATE_BACKUP * 64;
+	svs.client_entities = (entity_state_t*)Z_Malloc(sizeof(entity_state_t) * svs.num_client_entities);
 
 	// init network stuff
 	NET_Config((maxclients->value > 1));
@@ -197,5 +193,3 @@ void SV_InitGame(void)
 		memset(&svs.clients[i].lastcmd, 0, sizeof(svs.clients[i].lastcmd));
 	}
 }
-
-*/

@@ -205,7 +205,7 @@ cvar_t* Cvar_ForceSet(char* var_name, char* value);
 cvar_t* Cvar_FullSet(const char* var_name, const char* value, int flags);
 
 // expands value to a string and calls Cvar_Set
-void Cvar_SetValue(char* var_name, float value);
+void Cvar_SetValue(const char* var_name, float value);
 
 // returns 0 if not defined or non numeric
 float Cvar_VariableValue(const char* var_name);
@@ -290,14 +290,14 @@ void CL_Shutdown(void);
 void CL_Frame(int msec);
 
 void SV_Init(void);
-void SV_Shutdown(char* finalmsg, bool reconnect);
+void SV_Shutdown(const char* finalmsg, bool reconnect);
 void SV_Frame(int msec);
 //==========================================================================
 
 
 
 //==========================================================================
-// Net
+// Net Protocol
 // 
 // net.h -- quake's interface to the networking layer
 #define	PORT_ANY	-1
@@ -310,6 +310,10 @@ void SV_Frame(int msec);
 #define	PORT_SERVER	27910
 
 //==============================================
+
+#define	UPDATE_BACKUP	16	// copies of entity_state_t to keep buffered
+							// must be power of two
+#define	UPDATE_MASK		(UPDATE_BACKUP-1)
 
 //
 // client to server

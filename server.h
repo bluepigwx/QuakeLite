@@ -3,6 +3,9 @@
 #include "qcommon.h"
 #include "game.h"
 
+
+#define	MAX_MASTERS	8				// max recipients for heartbeat packets
+
 typedef enum {
 	ss_dead,			// no map loaded
 	ss_loading,			// spawning level edicts
@@ -40,6 +43,10 @@ typedef struct
 	sizebuf_t	multicast;
 	byte		multicast_buf[MAX_MSGLEN];
 } server_t;
+
+
+#define EDICT_NUM(n) ((edict_t *)((byte *)ge->edicts + ge->edict_size*(n)))
+#define NUM_FOR_EDICT(e) ( ((byte *)(e)-(byte *)ge->edicts ) / ge->edict_size)
 
 
 #define	LATENCY_COUNTS	16
@@ -121,6 +128,8 @@ typedef struct
 
 
 
+extern	netadr_t	master_adr[MAX_MASTERS];	// 可用服务器列表
+
 extern	server_t		sv;	// 单局内服务器核心状态维护
 extern	server_static_t	svs; // 全局内服务器状态维护
 
@@ -131,3 +140,21 @@ extern	cvar_t* maxclients;	// 当前的最大客户端连接数
 
 // 注册服务器运维命令，例如踢人，更换地图等等能力
 void SV_InitOperatorCommands(void);
+
+
+
+extern	game_export_t* ge;
+
+game_export_t* GetGameAPI(game_import_t* import);
+
+//
+// sv_game.c
+//
+void SV_InitGameProgs(void);
+
+
+//
+// sv_init.c
+//
+void SV_InitGame(void);
+void SV_Map(bool attractloop, char* levelstring, bool loadgame);

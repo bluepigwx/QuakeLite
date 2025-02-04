@@ -12,7 +12,7 @@
 */
 
 // FIXME: replace all Q_stricmp with Q_strcasecmp
-int Q_stricmp(char* s1, char* s2)
+int Q_stricmp(char* s1, const char* s2)
 {
 #if defined(WIN32)
 	return _stricmp(s1, s2);

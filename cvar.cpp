@@ -295,7 +295,7 @@ cvar_t* Cvar_FullSet(const char* var_name, const char* value, int flags)
 Cvar_SetValue
 ============
 */
-void Cvar_SetValue(char* var_name, float value)
+void Cvar_SetValue(const char* var_name, float value)
 {
 	char	val[32];
 
