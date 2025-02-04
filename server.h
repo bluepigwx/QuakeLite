@@ -15,7 +15,7 @@ typedef enum {
 // initializing (precache commands, static sounds / objects, etc)
 
 
-// 服务器核心状态维护
+// 服务器核心状态维护，应该是维护单局游戏生命期的数据
 typedef struct
 {
 	server_state_t	state;			// precache commands are only valid during load
@@ -67,7 +67,7 @@ typedef struct client_s
 	int				rate;
 	int				surpressCount;		// number of messages rate supressed
 
-	//edict_t*		edict;				// EDICT_NUM(clientnum+1)
+	edict_t*		edict;				// EDICT_NUM(clientnum+1)	// 这里应该指向自己对应的实体
 	char			name[32];			// extracted from userinfo, high bits masked
 	int				messagelevel;		// for filtering printed messages
 
@@ -93,7 +93,36 @@ typedef struct client_s
 //理解和维护好这个结构体对于开发高效、稳定的服务器至关重要。
 
 
-extern	server_t	sv;	// 服务器核心状态维护
+// 这个结构与server_t不同在于他的生命期应该是整个服务器的生命期而非单局的，因此他这里维护的数据应该是超过单局生命期的数据
+typedef struct
+{
+	bool		initialized;				// sv_init has completed
+	int			realtime;					// always increasing, no clamping, etc
+
+	char		mapcmd[MAX_TOKEN_CHARS];	// ie: *intro.cin+base	// 这里记录的是将要跳转的地图
+
+	int			spawncount;					// incremented each server start
+											// used to check late spawns
+
+	client_t* clients;					// [maxclients->value];	有哪些客户端连接上来了
+	int			num_client_entities;		// maxclients->value*UPDATE_BACKUP*MAX_PACKET_ENTITIES
+	int			next_client_entities;		// next client_entity to use
+	entity_state_t* client_entities;		// [num_client_entities]	这里保存每个客户端实体的要同步的状态？
+
+	int			last_heartbeat;
+
+	//challenge_t	challenges[MAX_CHALLENGES];	// to prevent invalid IPs from connecting
+
+	// serverrecord values
+	FILE* demofile;
+	sizebuf_t	demo_multicast;
+	byte		demo_multicast_buf[MAX_MSGLEN];
+} server_static_t;
+
+
+
+extern	server_t		sv;	// 单局内服务器核心状态维护
+extern	server_static_t	svs; // 全局内服务器状态维护
 
 
 extern	cvar_t* maxclients;	// 当前的最大客户端连接数
@@ -101,4 +130,4 @@ extern	cvar_t* maxclients;	// 当前的最大客户端连接数
 
 
 // 注册服务器运维命令，例如踢人，更换地图等等能力
-//void SV_InitOperatorCommands(void);
+void SV_InitOperatorCommands(void);

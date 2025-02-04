@@ -7,7 +7,7 @@ cvar_t* maxclients;			// FIXME: rename sv_maxclients
 
 void SV_Init(void)
 {
-	//SV_InitOperatorCommands();
+	SV_InitOperatorCommands();
 
 	maxclients = Cvar_Get("maxclients", "1", CVAR_SERVERINFO | CVAR_LATCH);
 }

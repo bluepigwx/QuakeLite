@@ -1,12 +1,11 @@
-
 // 服务器初始化逻辑
 
 
-//#include "server.h"
+#include "server.h"
 
 
-//server_t	sv;	// 服务器核心状态维护
-
+server_t	sv;	// 服务器核心状态维护
+server_static_t	svs;
 
 
 

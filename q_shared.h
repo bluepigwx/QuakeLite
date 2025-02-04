@@ -174,7 +174,6 @@ void Sys_FindClose(void);
 void Sys_Error(const char* error, ...);
 void Com_Printf(const char* msg, ...);
 void Com_Error(int code, const char* fmt, ...);
-char* va(char* format, ...);
 
 
 //
